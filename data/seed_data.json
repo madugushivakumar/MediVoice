@@ -1,0 +1,99 @@
+{
+  "doctors": [
+    {
+      "name": "Dr. Arjun Reddy",
+      "speciality": "Cardiology",
+      "qualification": "MBBS, MD, DM (Cardiology)",
+      "experience_years": 14,
+      "department": "Cardiology & Vascular Sciences",
+      "consultation_duration": 30,
+      "is_active": true
+    },
+    {
+      "name": "Dr. Priya Sharma",
+      "speciality": "Dermatology",
+      "qualification": "MBBS, MD (Dermatology, Venereology & Leprosy)",
+      "experience_years": 9,
+      "department": "Dermatology & Cosmetology",
+      "consultation_duration": 20,
+      "is_active": true
+    },
+    {
+      "name": "Dr. Rajesh Kumar",
+      "speciality": "Neurology",
+      "qualification": "MBBS, MD, DM (Neurology)",
+      "experience_years": 16,
+      "department": "Neurosciences & Spine Institute",
+      "consultation_duration": 30,
+      "is_active": true
+    },
+    {
+      "name": "Dr. Ananya Iyer",
+      "speciality": "Orthopedics",
+      "qualification": "MBBS, MS (Orthopedics), MCh",
+      "experience_years": 11,
+      "department": "Orthopedics & Joint Replacement",
+      "consultation_duration": 30,
+      "is_active": true
+    },
+    {
+      "name": "Dr. Vikram Malhotra",
+      "speciality": "Pediatrics",
+      "qualification": "MBBS, MD (Pediatrics), DCH",
+      "experience_years": 13,
+      "department": "Pediatrics & Neonatology",
+      "consultation_duration": 20,
+      "is_active": true
+    },
+    {
+      "name": "Dr. Sunita Deshmukh",
+      "speciality": "General Medicine",
+      "qualification": "MBBS, MD (Internal Medicine)",
+      "experience_years": 18,
+      "department": "Internal Medicine & Preventive Health",
+      "consultation_duration": 20,
+      "is_active": true
+    },
+    {
+      "name": "Dr. Kavita Nair",
+      "speciality": "Gynecology",
+      "qualification": "MBBS, MS (Obstetrics & Gynecology)",
+      "experience_years": 12,
+      "department": "Obstetrics & Women's Health",
+      "consultation_duration": 30,
+      "is_active": true
+    },
+    {
+      "name": "Dr. Rohan Joshi",
+      "speciality": "ENT",
+      "qualification": "MBBS, MS (Otorhinolaryngology)",
+      "experience_years": 8,
+      "department": "Ear, Nose, Throat & Head-Neck Surgery",
+      "consultation_duration": 20,
+      "is_active": true
+    }
+  ],
+  "sample_appointments": [
+    {
+      "patient_phone": "9876543210",
+      "doctor_name": "Dr. Arjun Reddy",
+      "date_offset_days": 1,
+      "start_time": "10:30 AM",
+      "status": "Booked"
+    },
+    {
+      "patient_phone": "9876543210",
+      "doctor_name": "Dr. Priya Sharma",
+      "date_offset_days": 2,
+      "start_time": "02:00 PM",
+      "status": "Booked"
+    },
+    {
+      "patient_phone": "9123456780",
+      "doctor_name": "Dr. Rajesh Kumar",
+      "date_offset_days": 1,
+      "start_time": "11:30 AM",
+      "status": "Booked"
+    }
+  ]
+}
