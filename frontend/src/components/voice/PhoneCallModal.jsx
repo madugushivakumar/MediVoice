@@ -16,10 +16,62 @@ import { WaveformVisualizer } from './WaveformVisualizer';
 import { TranscriptView } from './TranscriptView';
 import { BookingConfirmationCard } from './BookingConfirmationCard';
 
+// Predefined lists for dynamic quick prompts
+const SPECIALIZATIONS = [
+  'Cardiologist',
+  'Neurologist',
+  'Dermatologist',
+  'Orthopedic',
+  'Dentist',
+  'General Physician',
+  'ENT Specialist',
+  'Ophthalmologist',
+  'Gynecologist',
+  'Pediatrician'
+];
+
+const APPOINTMENT_TIMES = [
+  '09:00 AM',
+  '09:30 AM',
+  '10:00 AM',
+  '10:30 AM',
+  '11:00 AM',
+  '11:30 AM',
+  '12:00 PM',
+  '02:00 PM',
+  '02:30 PM',
+  '03:00 PM',
+  '04:00 PM',
+  '04:30 PM'
+];
+
+const generateRandomPhoneNumber = () => {
+  const firstDigit = Math.floor(Math.random() * 4) + 6; // 6, 7, 8, or 9
+  let remaining = '';
+  for (let i = 0; i < 9; i++) {
+    remaining += Math.floor(Math.random() * 10);
+  }
+  return `${firstDigit}${remaining}`;
+};
+
+const getRandomItem = (items) => items[Math.floor(Math.random() * items.length)];
+const formatSpecialization = (spec) => (spec === 'ENT Specialist' ? 'ENT specialist' : spec.toLowerCase());
+
+// Generated once per page session; refreshed on every browser reload
+const SESSION_QUICK_PROMPTS = [
+  `I need an appointment with a ${formatSpecialization(getRandomItem(SPECIALIZATIONS))} tomorrow`,
+  `What about ${getRandomItem(APPOINTMENT_TIMES)}?`,
+  generateRandomPhoneNumber(),
+  'Yes, that is correct',
+  'Yes, book it',
+  'I want to cancel my appointment'
+];
+
 export function PhoneCallModal({
   isOpen,
   onClose,
   callState,
+  pipelineMode,
   callDuration,
   isMuted,
   transcript,
@@ -33,6 +85,7 @@ export function PhoneCallModal({
   onSendSpokenInput
 }) {
   const [inputText, setInputText] = useState('');
+  const [quickPrompts] = useState(SESSION_QUICK_PROMPTS);
 
   if (!isOpen) return null;
 
@@ -87,7 +140,18 @@ export function PhoneCallModal({
               <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-950"></span>
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">MediVoice Assistant</h3>
+              <div className="flex items-center space-x-2">
+                <h3 className="text-sm font-bold text-white">MediVoice Assistant</h3>
+                {pipelineMode && (
+                  <span className={`px-2 py-0.2 text-[9px] font-bold rounded-full uppercase tracking-wider ${
+                    pipelineMode === 'LIVE_VOICE'
+                      ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                      : 'bg-blue-500/10 text-cyan-400 border border-cyan-500/20'
+                  }`}>
+                    {pipelineMode === 'LIVE_VOICE' ? 'Live Pipecat Voice' : 'Text / Prompt Mode'}
+                  </span>
+                )}
+              </div>
               <div className="flex items-center space-x-2 mt-0.5">
                 <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full border ${stateInfo.bg}`}>
                   {stateInfo.label}
@@ -125,6 +189,19 @@ export function PhoneCallModal({
             </div>
           )}
 
+          {/* Mode information banner if cloud keys not yet configured */}
+          {pipelineMode === 'TEXT_FALLBACK' && (
+            <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-slate-300 text-xs flex items-start space-x-2.5">
+              <Sparkles className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-white block mb-0.5">Microphone streaming active</span>
+                <span className="text-[11px] text-slate-400">
+                  Microphone audio is actively streamed to the backend. To enable real-time speech recognition via ElevenLabs STT & Gemini LLM, configure <code className="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded">ELEVENLABS_API_KEY</code> and <code className="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded">GEMINI_API_KEY</code> in <code className="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded">voice-agent/.env</code>. All appointment tools can also be demonstrated below.
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Waveform Visualizer */}
           <div className="p-3 rounded-2xl bg-slate-900/50 border border-slate-800/70">
             <WaveformVisualizer audioLevel={audioLevel} state={callState} />
@@ -140,7 +217,7 @@ export function PhoneCallModal({
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-2">
               Live Transcript
             </span>
-            <TranscriptView transcript={transcript} />
+            <TranscriptView transcript={transcript} callState={callState} />
           </div>
 
           {/* Quick Voice / Text Prompts for Demonstration */}
@@ -150,14 +227,7 @@ export function PhoneCallModal({
                 Quick Spoken Prompts (click to simulate speech):
               </span>
               <div className="flex flex-wrap gap-1.5">
-                {[
-                  'I need an appointment with a cardiologist tomorrow',
-                  'What about 10:30 AM?',
-                  '9876543210',
-                  'Yes, that is correct',
-                  'Yes, book it',
-                  'I want to cancel my appointment'
-                ].map((prompt, i) => (
+                {quickPrompts.map((prompt, i) => (
                   <button
                     key={i}
                     onClick={() => onSendSpokenInput(prompt)}

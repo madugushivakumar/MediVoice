@@ -11,12 +11,16 @@ from app.database.connection import SessionLocal, init_db
 from app.database.seed import seed_database
 from app.database.models import Doctor, AvailabilitySlot, Appointment
 
+import os
+
 @pytest.fixture(scope="module")
 def client():
+    os.environ["TESTING"] = "1"
     init_db()
     seed_database(reset=True)
     with TestClient(app) as c:
         yield c
+    os.environ.pop("TESTING", None)
 
 def test_health_endpoint(client):
     res = client.get("/api/health")
@@ -57,7 +61,11 @@ def test_voice_call_session_start_and_websocket_greeting(client):
         assert state_msg["type"] == "CALL_STATE_CHANGED"
         assert state_msg["data"]["state"] == "CONNECTED"
 
-        # Second message: TRANSCRIPT_UPDATE (AI initial greeting)
+        # Second message: PIPELINE_MODE
+        mode_msg = json.loads(ws.receive_text())
+        assert mode_msg["type"] == "PIPELINE_MODE"
+
+        # Third message: TRANSCRIPT_UPDATE (AI initial greeting)
         greeting_msg = json.loads(ws.receive_text())
         assert greeting_msg["type"] == "TRANSCRIPT_UPDATE"
         assert greeting_msg["data"]["speaker"] == "AI"
@@ -75,8 +83,9 @@ def test_full_conversational_booking_workflow(client):
     session_id = start_res.json()["session_id"]
 
     with client.websocket_connect(f"/ws/call/{session_id}") as ws:
-        # Read initial state & greeting
+        # Read initial state, pipeline mode & greeting
         ws.receive_text() # state
+        ws.receive_text() # mode
         ws.receive_text() # greeting
 
         # Step 1: Caller speaks enquiry about cardiologist tomorrow

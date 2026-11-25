@@ -122,6 +122,7 @@ export function App() {
         isOpen={isCallModalOpen}
         onClose={() => setIsCallModalOpen(false)}
         callState={voice.callState}
+        pipelineMode={voice.pipelineMode}
         callDuration={voice.callDuration}
         isMuted={voice.isMuted}
         transcript={voice.transcript}

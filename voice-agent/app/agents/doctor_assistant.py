@@ -14,15 +14,17 @@ class DoctorAssistantAgent:
     def create_llm_service() -> GoogleLLMService:
         """
         Creates and configures the Google Gemini LLM service with all 3 required tools registered.
+        Adapts tool schemas into the function_declarations structure required by the Google GenAI SDK.
         """
         system_instruction = get_system_prompt()
         
-        # Define all 3 tools
-        tools = [
-            AVAILABILITY_TOOL_SCHEMA,
-            BOOKING_TOOL_SCHEMA,
-            CANCELLATION_TOOL_SCHEMA
+        # Define all 3 tools in the function_declarations format expected by Google GenAI
+        function_declarations = [
+            AVAILABILITY_TOOL_SCHEMA.to_default_dict(),
+            BOOKING_TOOL_SCHEMA.to_default_dict(),
+            CANCELLATION_TOOL_SCHEMA.to_default_dict()
         ]
+        tools = [{"function_declarations": function_declarations}]
 
         llm = GoogleLLMService(
             api_key=settings.GEMINI_API_KEY or "dummy_key",
